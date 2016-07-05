@@ -1,0 +1,17 @@
+
+/* Class = "UITableViewController"; title = "Location"; ObjectID = "0c3-fH-mEP"; */
+"0c3-fH-mEP.title" = "Location";
+
+/* Class = "UISearchBar"; Iel-JQ-em5.scopeButtonTitles[0] = "Title"; ObjectID = "Iel-JQ-em5"; */
+"Iel-JQ-em5.scopeButtonTitles[0]" = "Title";
+
+/* Class = "UISearchBar"; Iel-JQ-em5.scopeButtonTitles[1] = "Title"; ObjectID = "Iel-JQ-em5"; */
+"Iel-JQ-em5.scopeButtonTitles[1]" = "Title";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "efd-0T-pDN";
+ Required attribution text for yr.no data
+*/
+"efd-0T-pDN.text" = "Værvarsel fra Yr levert av Meteorologisk institutt og NRK";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "sDy-Ar-9oY"; */
+"sDy-Ar-9oY.text" = "Label";
