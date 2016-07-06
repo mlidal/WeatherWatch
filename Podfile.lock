@@ -1,12 +1,18 @@
 PODS:
-  - GoogleMaps (1.13.2)
+  - Alamofire (3.4.1)
+  - SwiftyJSON (2.3.2)
+  - SWXMLHash (2.3.1)
 
 DEPENDENCIES:
-  - GoogleMaps
+  - Alamofire
+  - SwiftyJSON
+  - SWXMLHash
 
 SPEC CHECKSUMS:
-  GoogleMaps: b20a103ff307f58392e603cf142e59d7e30374c1
+  Alamofire: 01a82e2f6c0f860ade35534c8dd88be61bdef40c
+  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
+  SWXMLHash: 795c66e74f4cc9473ad6465c6653c5a6f59f417e
 
-PODFILE CHECKSUM: abc51437bcabb8826122f513cf0da25084098dbc
+PODFILE CHECKSUM: 05573ed57f32bd10310b08325fc8f8faff8671a6
 
 COCOAPODS: 1.0.1
