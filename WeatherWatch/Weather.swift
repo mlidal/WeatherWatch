@@ -25,7 +25,7 @@ class Weather {
 
         let locationXML = input["location"]
         location = Location(name: locationXML["name"].element!.text!, type: locationXML["type"].element!.text!, country: locationXML["country"].element!.text!, lat: Double(locationXML["location"].element!.attributes["latitude"]!)!, lon: Double(locationXML["location"].element!.attributes["longitude"]!)!)
-        let creditXML = input["credits"]["link"].element!
+        let creditXML = input["credit"]["link"].element!
         creditText = creditXML.attributes["text"]!
         creditUrl = creditXML.attributes["url"]!
         

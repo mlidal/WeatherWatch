@@ -12,13 +12,16 @@ import CoreData
 
 class LocationsViewController: UIViewController, UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate, SearchResultDelegate {
     
-    var placemark : CLPlacemark!
     var location : CLLocation!
+    var myLocation : Location!
     var locationManager : CLLocationManager!
     let locationService = LocationService()
+    let weatherService = WeatherService()
+    
     var searchController : UISearchController!
     var searchResultsController : SearchResultsController!
     var managedObjectContext: NSManagedObjectContext!
+    var tempObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
     
     lazy var fetchedResultsController: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: "Location")
@@ -53,6 +56,8 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         tableView.delegate = self
         tableView.dataSource = self
         tableView.allowsMultipleSelectionDuringEditing = false
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 80.0
         
         tableView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(closeSearch)))
         
@@ -126,7 +131,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return placemark == nil ? 0 : 1
+            return myLocation == nil ? 0 : 1
         } else {
             let sections = fetchedResultsController.sections
             if sections != nil && sections!.count > 0  {
@@ -137,17 +142,38 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         }
     }
     
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "Nåværende posisjon"
+        } else {
+            return "Mine lagrede posisjoner"
+        }
+    }
+    
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         return indexPath.section == 1
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("MyLocationCell", forIndexPath: indexPath) as! WeatherCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("WeatherCell", forIndexPath: indexPath) as! WeatherCell
+        let completion : Weather -> Void = {
+            weather in
+            let report = weather.reports.first!
+            cell.place.text = weather.location.name
+            cell.temperature.text = String(format: "%.1f °", report.temperature)
+            cell.weatherIcon.image = UIImage(named: report.symbol.variable + ".png")
+            cell.precipitation.text = String(format: "%.1f mm", report.precipitation)
+            cell.windSpeed.text = String(format: "%.1f m/s", report.windSpeed)
+            
+            cell.windDirection.image = self.getWindIcon(report.windSpeed)
+            cell.windDirection.transform = CGAffineTransformMakeRotation(CGFloat(report.windDirection.degreesToRadians))
+            
+        }
         if indexPath.section == 0 {
-            cell.label.text = self.placemark.name
+            weatherService.getWeather(myLocation, completion: completion)
         } else {
             let entity = fetchedResultsController.objectAtIndexPath(NSIndexPath(forItem: indexPath.row, inSection: 0)) as! Location
-            cell.label.text = entity.name
+            weatherService.getWeather(entity, completion: completion)
         }
         return cell
     }
@@ -180,19 +206,69 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             geocoder.reverseGeocodeLocation(location, completionHandler: {
                 placemarks, error in
                 if placemarks != nil && placemarks!.count > 0 {
-                    for mark in placemarks! {
-                        print(mark)
-                    }
+                    let placemark = placemarks![0]
+                    let entitiyDesc = NSEntityDescription.entityForName("Location", inManagedObjectContext: self.managedObjectContext)
+
+                    self.myLocation = NSManagedObject.init(entity: entitiyDesc!, insertIntoManagedObjectContext: nil) as! Location
+                    self.myLocation.name = placemark.locality
+                    self.myLocation.country = placemark.country
+                    self.myLocation.county = placemark.administrativeArea
+                    self.myLocation.administrativeArea = placemark.locality
                     
-                    self.placemark = placemarks![0]
                     self.tableView.reloadData()
                 }
             })
             
         }
     }
+    
+    private func getWindIcon(windSpeed : Double) -> UIImage? {
+        var icon : UIImage?
+        if windSpeed < 1 {
+            icon = UIImage(named: "Wind Speed less 1.png")
+        } else if windSpeed < 3 {
+            icon = UIImage(named: "Wind Speed 1-2.png")
+        } else if windSpeed < 8 {
+            icon = UIImage(named: "Wind Speed 3-7.png")
+        } else if windSpeed < 13 {
+            icon = UIImage(named: "Wind Speed 8-12.png")
+        } else if windSpeed < 18 {
+            icon = UIImage(named: "Wind Speed 13-17.png")
+        } else if windSpeed < 23 {
+            icon = UIImage(named: "Wind Speed 18-22.png")
+        } else if windSpeed < 28 {
+            icon = UIImage(named: "Wind Speed 23-27.png")
+        } else if windSpeed < 33 {
+            icon = UIImage(named: "Wind Speed 28-32.png")
+        } else if windSpeed < 38 {
+            icon = UIImage(named: "Wind Speed 33-37.png")
+        } else if windSpeed < 43 {
+            icon = UIImage(named: "Wind Speed 38-42.png")
+        } else if windSpeed < 48 {
+            icon = UIImage(named: "Wind Speed 43-47.png")
+        } else if windSpeed < 53 {
+            icon = UIImage(named: "Wind Speed 48-52.png")
+        } else if windSpeed < 58 {
+            icon = UIImage(named: "Wind Speed 53-57.png")
+        } else if windSpeed < 63 {
+            icon = UIImage(named: "Wind Speed 58-62.png")
+        } else if windSpeed < 68 {
+            icon = UIImage(named: "Wind Speed 63-67.png")
+        } else if windSpeed < 73 {
+            icon = UIImage(named: "Wind Speed 68-72.png")
+        } else if windSpeed < 78 {
+            icon = UIImage(named: "Wind Speed 73-77.png")
+        }
+        return icon
+        
+    }
+    
 }
 
 protocol SearchResultDelegate {
     func searchResultSelected(result : SearchLocation)
+}
+
+extension Double {
+    var degreesToRadians: Double { return self * M_PI / 180 }
 }

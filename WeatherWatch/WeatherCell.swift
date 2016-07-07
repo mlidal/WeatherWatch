@@ -10,7 +10,14 @@ import UIKit
 
 class WeatherCell: UITableViewCell {
 
-    @IBOutlet var label: UILabel!
+    @IBOutlet var place: UILabel!
+    
+    @IBOutlet var temperature: UILabel!
+    @IBOutlet var weatherIcon: UIImageView!
+    @IBOutlet var precipitation: UILabel!
+    
+    @IBOutlet var windSpeed: UILabel!    
+    @IBOutlet var windDirection: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

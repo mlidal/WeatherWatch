@@ -8,6 +8,8 @@
 
 import Foundation
 import SWXMLHash
+import CoreLocation
+import SwiftyJSON
 
 class SearchLocation {
     
@@ -19,8 +21,13 @@ class SearchLocation {
     init(representation : XMLIndexer) {
         name = representation["stedsnavn"].element!.text!
         county = representation["fylkesnavn"].element!.text!
-        administrativeArea = representation["kommunenavn"].element!.text!
+        administrativeArea = SearchLocation.trimCountyName(representation["kommunenavn"].element!.text!)
         country = "Norway"
     }
-
+ 
+    
+    private static func trimCountyName(name : String) -> String {
+        let regex =  try! NSRegularExpression(pattern: " \\(\\w*\\)", options: .CaseInsensitive)
+        return regex.stringByReplacingMatchesInString(name, options: [], range: NSMakeRange(0, name.characters.count), withTemplate: "")
+    }
 }

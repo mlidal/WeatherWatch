@@ -8,10 +8,31 @@
 //
 
 import Foundation
+import Alamofire
+import SWXMLHash
 
 class WeatherService {
     
-    let url = "http://www.yr.no/stad/"
+    let baseUrl = "https://www.yr.no/stad/"
     
-    
+    func getWeather(location : Location, completion : Weather -> Void) {
+        var path = location.country! + "/"
+        path += location.county! + "/"
+        if location.administrativeArea != nil {
+            
+            path += location.administrativeArea! + "/"
+        }
+        path += location.name! + "/varsel.xml"
+        
+        Alamofire.request(.GET, baseUrl + path.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!).validate().response() {
+            request, response, data, error in
+            
+            let xml = SWXMLHash.parse(data!)
+            
+            if xml["weatherdata"].element != nil {
+                let weather = Weather(input: xml["weatherdata"])
+                completion(weather)
+            }
+        }
+    }
 }

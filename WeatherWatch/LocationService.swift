@@ -9,13 +9,18 @@
 import Foundation
 import Alamofire
 import SWXMLHash
+import CoreLocation
+import SwiftyJSON
 
 class LocationService {
     
     let SSRIUrl = "https://ws.geonorge.no/SKWS3Index/ssr/sok?"
+    let geocodeUrl = "https://ws.geonorge.no/AdresseWS/adresse/radius?"
+    
     
     func locationSearch(text : String, completion : [SearchLocation] -> Void) {
-        Alamofire.request(.GET, SSRIUrl + "navn=" + text + "*").validate().response {
+        let path = "navn=" + text + "*"
+        Alamofire.request(.GET, SSRIUrl + path.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!).validate().response {
             request, response, data, error in
             
             let xml = SWXMLHash.parse(data!)
@@ -35,6 +40,5 @@ class LocationService {
         }
         
     }
-    
 }
     
