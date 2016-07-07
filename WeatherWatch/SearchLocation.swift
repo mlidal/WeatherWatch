@@ -25,6 +25,12 @@ class SearchLocation {
         country = "Norway"
     }
  
+    init(name : String, country : String, county : String, administrativeArea : String) {
+        self.name = name
+        self.county = county
+        self.country = country
+        self.administrativeArea = administrativeArea
+    }
     
     private static func trimCountyName(name : String) -> String {
         let regex =  try! NSRegularExpression(pattern: " \\(\\w*\\)", options: .CaseInsensitive)

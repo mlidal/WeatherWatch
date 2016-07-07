@@ -15,14 +15,19 @@ class WeatherService {
     
     let baseUrl = "https://www.yr.no/stad/"
     
-    func getWeather(location : Location, completion : Weather -> Void) {
+    func getWeather(location : Location, completion : Weather? -> Void) {
         var path = location.country! + "/"
         path += location.county! + "/"
         if location.administrativeArea != nil {
             
             path += location.administrativeArea! + "/"
         }
-        path += location.name! + "/varsel.xml"
+        
+        if location.country == "Norway" || (location.administrativeArea == nil || location.administrativeArea != location.name) {
+            path += location.name! + "/"
+        }
+        
+        path += "varsel.xml"
         
         Alamofire.request(.GET, baseUrl + path.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!).validate().response() {
             request, response, data, error in
@@ -32,6 +37,8 @@ class WeatherService {
             if xml["weatherdata"].element != nil {
                 let weather = Weather(input: xml["weatherdata"])
                 completion(weather)
+            } else {
+                completion(nil)
             }
         }
     }

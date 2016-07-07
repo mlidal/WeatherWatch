@@ -15,7 +15,7 @@ import SwiftyJSON
 class LocationService {
     
     let SSRIUrl = "https://ws.geonorge.no/SKWS3Index/ssr/sok?"
-    let geocodeUrl = "https://ws.geonorge.no/AdresseWS/adresse/radius?"
+    let geocodeUrl = "http://api.geonames.org/findNearbyJSON?"
     
     
     func locationSearch(text : String, completion : [SearchLocation] -> Void) {
@@ -40,5 +40,31 @@ class LocationService {
         }
         
     }
+    
+    func geocodeSearch(location : CLLocation, placename : CLPlacemark, completion : SearchLocation -> Void) {
+        let url = geocodeUrl + "lat=\(location.coordinate.latitude)&lng=\(location.coordinate.longitude)&username=mathiaslidal"
+        Alamofire.request(.GET, url).validate().responseJSON() {
+            response in
+            switch response.result {
+            case .Success(let value):
+                let jsonString = JSON(value)
+                let geoname = jsonString["geonames"].arrayValue.first!
+                let name = geoname["name"].stringValue
+                let country = geoname["countryName"].stringValue
+                if country == "Norway" {
+                    self.locationSearch(name, completion: {
+                        locations in
+                        completion(locations[0])
+                    })
+                } else {
+                    let location = SearchLocation(name: name, country: country, county: placename.administrativeArea! , administrativeArea: placename.administrativeArea!)
+                    completion(location)
+                }
+            case .Failure(let error):
+                print(error)
+            }
+        }
+    }
+    
 }
     

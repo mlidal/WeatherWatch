@@ -156,10 +156,17 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("WeatherCell", forIndexPath: indexPath) as! WeatherCell
-        let completion : Weather -> Void = {
+        cell.place.text = "  "
+        cell.temperature.text = ""
+        cell.weatherIcon.image = nil
+        cell.precipitation.text = ""
+        cell.windSpeed.text = ""
+        cell.windDirection.image = nil
+        let completion : Weather? -> Void = {
             weather in
-            let report = weather.reports.first!
-            cell.place.text = weather.location.name
+            if weather != nil {
+            let report = weather!.reports.first!
+            cell.place.text = weather!.location.name
             cell.temperature.text = String(format: "%.1f °", report.temperature)
             cell.weatherIcon.image = UIImage(named: report.symbol.variable + ".png")
             cell.precipitation.text = String(format: "%.1f mm", report.precipitation)
@@ -167,7 +174,9 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             
             cell.windDirection.image = self.getWindIcon(report.windSpeed)
             cell.windDirection.transform = CGAffineTransformMakeRotation(CGFloat(report.windDirection.degreesToRadians))
-            
+            } else {
+                cell.place.text = "Kunne ikke finne stedet"
+            }
         }
         if indexPath.section == 0 {
             weatherService.getWeather(myLocation, completion: completion)
@@ -207,15 +216,17 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
                 placemarks, error in
                 if placemarks != nil && placemarks!.count > 0 {
                     let placemark = placemarks![0]
-                    let entitiyDesc = NSEntityDescription.entityForName("Location", inManagedObjectContext: self.managedObjectContext)
-
-                    self.myLocation = NSManagedObject.init(entity: entitiyDesc!, insertIntoManagedObjectContext: nil) as! Location
-                    self.myLocation.name = placemark.locality
-                    self.myLocation.country = placemark.country
-                    self.myLocation.county = placemark.administrativeArea
-                    self.myLocation.administrativeArea = placemark.locality
                     
-                    self.tableView.reloadData()
+                    self.locationService.geocodeSearch(self.location, placename: placemark, completion: {
+                        location in
+                        let entitiyDesc = NSEntityDescription.entityForName("Location", inManagedObjectContext: self.managedObjectContext)
+                        
+                        self.myLocation = NSManagedObject.init(entity: entitiyDesc!, insertIntoManagedObjectContext: nil) as! Location
+                        self.myLocation.setLocationFromSearch(location)
+                        self.tableView.reloadData()
+                    })
+                    
+                    
                 }
             })
             

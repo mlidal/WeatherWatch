@@ -6,6 +6,11 @@
 	<string>en</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Trenger å vite posisjonen for å vise lokalt vær</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
