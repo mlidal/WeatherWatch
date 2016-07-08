@@ -24,8 +24,10 @@ class SearchResultsController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("SearchResultCell")
+        let result = searchResults[indexPath.row]
         
-        cell?.textLabel?.text = searchResults[indexPath.row].name
+        cell?.textLabel?.text = result.name
+        cell?.detailTextLabel?.text = "\(result.type), \(result.county) (\(result.country))"
         return cell!
     }
     

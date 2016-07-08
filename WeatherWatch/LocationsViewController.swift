@@ -89,7 +89,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     }
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
-        locationService.locationSearch(searchController.searchBar.text!, completion: {
+        locationService.locationSearch(searchController.searchBar.text!, onlyNorway: false, completion: {
             results in
             self.searchResultsController.updateSearchResults(results)
         })
@@ -166,7 +166,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             weather in
             if weather != nil {
             let report = weather!.reports.first!
-            cell.place.text = weather!.location.name
+            cell.place.text = weather!.location.name + "/" + weather!.location.country
             cell.temperature.text = String(format: "%.1f °", report.temperature)
             cell.weatherIcon.image = UIImage(named: report.symbol.variable + ".png")
             cell.precipitation.text = String(format: "%.1f mm", report.precipitation)
