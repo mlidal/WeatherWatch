@@ -8,10 +8,11 @@
 
 import UIKit
 import CoreLocation
-import SWXMLHash
 
-class Weather {
+class Weather : NSObject {
 
+    let timestamp : NSDate
+    
     let location : Location
     
     let creditText : String
@@ -19,30 +20,18 @@ class Weather {
     
     var reports = [WeatherReport]()
     
-    init(input : XMLIndexer) {
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-
-        let locationXML = input["location"]
-        location = Location(name: locationXML["name"].element!.text!, type: locationXML["type"].element!.text!, country: locationXML["country"].element!.text!, lat: Double(locationXML["location"].element!.attributes["latitude"]!)!, lon: Double(locationXML["location"].element!.attributes["longitude"]!)!)
-        let creditXML = input["credit"]["link"].element!
-        creditText = creditXML.attributes["text"]!
-        creditUrl = creditXML.attributes["url"]!
-        
-        let forecastXML = input["forecast"]["tabular"]
-        for forecast in forecastXML["time"].all {
-            let startTime = dateFormatter.dateFromString(forecast.element!.attributes["from"]!)!
-            let endTime  = dateFormatter.dateFromString(forecast.element!.attributes["to"]!)!
-            let symbolXML = forecast["symbol"].element!
-            let symbolNumber = Int(symbolXML.attributes["number"]!)
-            let symbolNumberEx = Int(symbolXML.attributes["numberEx"]!)
-            let symbol = WeatherSymbol(number: symbolNumber!, numberEx: symbolNumberEx!, name: symbolXML.attributes["name"]!, variable: symbolXML.attributes["var"]!)
-
-            let report = WeatherReport(startTime: startTime, endTime: endTime, symbol: symbol, precipitation: Double(forecast["precipitation"].element!.attributes["value"]!)!, windSpeed: Double(forecast["windSpeed"].element!.attributes["mps"]!)!, windDirection: Double(forecast["windDirection"].element!.attributes["deg"]!)!, temperature: Double(forecast["temperature"].element!.attributes["value"]!)!)
-            reports.append(report)
-        }
+    init(location : Weather.Location, creditText: String, creditUrl: String, reports : [WeatherReport]) {
+        self.timestamp = NSDate()
+        self.location = location
+        self.creditUrl = creditUrl
+        self.creditText = creditText
+        self.reports = reports
+        super.init()
     }
     
+    func hasExpired() -> Bool {
+        return abs(timestamp.timeIntervalSinceNow) > 600
+    }    
     
     class WeatherReport {
         let startTime : NSDate

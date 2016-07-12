@@ -6,13 +6,19 @@
 //  Copyright © 2016 Mathias Lidal. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Alamofire
 import SWXMLHash
 import CoreLocation
 import SwiftyJSON
 
 class LocationService {
+    
+    static let locationService = LocationService()
+    
+    private init() {}
+    
+    var currentLocation : Location?
     
     let SSRIUrl = "https://ws.geonorge.no/SKWS3Index/ssr/sok?"
     let geonamesSearchUrl = "http://api.geonames.org/searchJSON?"
@@ -33,7 +39,8 @@ class LocationService {
             let res = xml["sokRes"]
             if res["sokStatus"]["ok"].element?.text == "true" {
                 for locXML in res["stedsnavn"].all {
-                    let location = SearchLocation(representation: locXML)
+                    
+                    let location = self.createSearchLocation(locXML)
                     locations.insert(location)
                 }
             }
@@ -76,31 +83,51 @@ class LocationService {
         completion(Array(array.prefix(10)))
     }
     
-    func geocodeSearch(location : CLLocation, placename : CLPlacemark, completion : SearchLocation -> Void) {
-        let url = geocodeUrl + "lat=\(location.coordinate.latitude)&lng=\(location.coordinate.longitude)&username=mathiaslidal"
-        Alamofire.request(.GET, url).validate().responseJSON() {
-            response in
-            switch response.result {
-            case .Success(let value):
-                let jsonString = JSON(value)
-                let geoname = jsonString["geonames"].arrayValue.first!
-                let name = geoname["name"].stringValue
-                let country = geoname["countryName"].stringValue
-                let type = geoname["fclName"].stringValue
-                if country == "Norway" {
-                    self.locationSearch(name, completion: {
-                        locations in
-                        completion(locations[0])
-                    })
-                } else {
-                    let location = SearchLocation(name: name, country: country, county: placename.administrativeArea! , administrativeArea: placename.administrativeArea!, type: type)
-                    completion(location)
+    func geocodeSearch(location : CLLocation, completion : SearchLocation -> Void) {
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location, completionHandler: {
+            placemarks, errors in
+            let placename = placemarks![0]
+            
+            let url = self.geocodeUrl + "lat=\(location.coordinate.latitude)&lng=\(location.coordinate.longitude)&username=mathiaslidal"
+            Alamofire.request(.GET, url).validate().responseJSON() {
+                response in
+                switch response.result {
+                case .Success(let value):
+                    let jsonString = JSON(value)
+                    let geoname = jsonString["geonames"].arrayValue.first!
+                    let name = geoname["name"].stringValue
+                    let country = geoname["countryName"].stringValue
+                    let type = geoname["fclName"].stringValue
+                    if country == "Norway" {
+                        self.locationSearch(name, completion: {
+                            locations in
+                            completion(locations[0])
+                        })
+                    } else {
+                        let location = SearchLocation(name: name, country: country, county: placename.administrativeArea! , administrativeArea: placename.administrativeArea!, type: type)
+                        completion(location)
+                    }
+                case .Failure(let error):
+                    print(error)
                 }
-            case .Failure(let error):
-                print(error)
             }
-        }
+            
+        })
     }
     
+    private func createSearchLocation(representation : XMLIndexer) -> SearchLocation {
+        let name = representation["stedsnavn"].element!.text!
+        let county = representation["fylkesnavn"].element!.text!
+        let administrativeArea = trimCountyName(representation["kommunenavn"].element!.text!)
+        let country = "Norway"
+        let type = representation["navnetype"].element!.text!
+        return SearchLocation(name: name, country: country, county: county, administrativeArea: administrativeArea, type: type)
+    }
+    
+    private func trimCountyName(name : String) -> String {
+        let regex =  try! NSRegularExpression(pattern: " \\(\\w*\\)", options: .CaseInsensitive)
+        return regex.stringByReplacingMatchesInString(name, options: [], range: NSMakeRange(0, name.characters.count), withTemplate: "")
+    }
 }
 

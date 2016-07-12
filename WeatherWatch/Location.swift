@@ -17,4 +17,13 @@ class Location : NSManagedObject {
         country = search.country
         administrativeArea = search.administrativeArea
     }
+    
+    func toDictionary() -> [String:String] {
+        var dict = [String:String]()
+        dict["name"] = name
+        dict["county"] = county
+        dict["country"] = country
+        dict["administrativeArea"] = administrativeArea
+        return dict
+    }
 }
