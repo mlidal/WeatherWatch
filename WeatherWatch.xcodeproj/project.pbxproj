@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		84F345183430CA4882A3A3D5 /* Pods_WeatherWatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 847647BB7A90C56175C9E39E /* Pods_WeatherWatch.framework */; };
+		A70021B81D3504F6002E625A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A70021BA1D3504F6002E625A /* Localizable.strings */; };
 		A70B23CA1D2BEAD30046AC44 /* location.gpx in Resources */ = {isa = PBXBuildFile; fileRef = A70B23C91D2BEAD30046AC44 /* location.gpx */; };
 		A70B23CD1D2CF5030046AC44 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70B23CC1D2CF5030046AC44 /* LocationService.swift */; };
 		A70B23CF1D2CF50E0046AC44 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70B23CE1D2CF50E0046AC44 /* WeatherService.swift */; };
@@ -47,6 +48,9 @@
 		1495B7CB8C8E54290B5C6C49 /* Pods-WeatherWatch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WeatherWatch.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WeatherWatch/Pods-WeatherWatch.debug.xcconfig"; sourceTree = "<group>"; };
 		847647BB7A90C56175C9E39E /* Pods_WeatherWatch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WeatherWatch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DBFDDFEE5042062AB4081C5 /* Pods-WeatherWatch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WeatherWatch.release.xcconfig"; path = "Pods/Target Support Files/Pods-WeatherWatch/Pods-WeatherWatch.release.xcconfig"; sourceTree = "<group>"; };
+		A70021B91D3504F6002E625A /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A70021BB1D3504FC002E625A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A70021BC1D3504FD002E625A /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A70B23C91D2BEAD30046AC44 /* location.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = location.gpx; path = WeatherWatch/location.gpx; sourceTree = "<group>"; };
 		A70B23CC1D2CF5030046AC44 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		A70B23CE1D2CF50E0046AC44 /* WeatherService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
@@ -179,6 +183,7 @@
 				A723A3581D2662C100EB39EB /* WeatherWatch.xcdatamodeld */,
 				A70B23D41D2CF7190046AC44 /* ViewControllers */,
 				A70B23D31D2CF7140046AC44 /* Cells */,
+				A70021BA1D3504F6002E625A /* Localizable.strings */,
 			);
 			path = WeatherWatch;
 			sourceTree = "<group>";
@@ -299,6 +304,7 @@
 			knownRegions = (
 				en,
 				Base,
+				nb,
 			);
 			mainGroup = A723A3451D2662C100EB39EB;
 			productRefGroup = A723A34F1D2662C100EB39EB /* Products */;
@@ -318,6 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A723A35C1D2662C100EB39EB /* Assets.xcassets in Resources */,
+				A70021B81D3504F6002E625A /* Localizable.strings in Resources */,
 				A70B23CA1D2BEAD30046AC44 /* location.gpx in Resources */,
 				A723A3571D2662C100EB39EB /* Main.storyboard in Resources */,
 			);
@@ -438,6 +445,16 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		A70021BA1D3504F6002E625A /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A70021B91D3504F6002E625A /* Base */,
+				A70021BB1D3504FC002E625A /* en */,
+				A70021BC1D3504FD002E625A /* nb */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		A723A3551D2662C100EB39EB /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

@@ -58,6 +58,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         //tableView.allowsMultipleSelectionDuringEditing = false
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 80.0
+        tableView.tableFooterView = UIView(frame: CGRectZero)
         
         searchResultsController = navigationController?.storyboard?.instantiateViewControllerWithIdentifier("SearchResultsController") as! SearchResultsController
         searchResultsController.delegate = self
@@ -137,9 +138,9 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
-            return "Nåværende posisjon"
+            return NSLocalizedString("Current position", comment: "Current position")
         } else {
-            return "Mine lagrede posisjoner"
+            return NSLocalizedString("Saved positions", comment: "Saved positions")
         }
     }
     
@@ -169,7 +170,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
                 cell.windDirection.image = self.getWindIcon(report.windSpeed)
                 cell.windDirection.transform = CGAffineTransformMakeRotation(CGFloat((report.windDirection + 90).degreesToRadians))
             } else {
-                cell.place.text = "Kunne ikke finne stedet"
+                cell.place.text = NSLocalizedString("Unable to find weather data", comment: "Unable to find weather data")
             }
         }
         if indexPath.section == 0 {

@@ -1,0 +1,15 @@
+/* 
+  Localizable.strings
+  WeatherWatch
+
+  Created by Mathias Lidal on 12/07/16.
+  Copyright © 2016 Mathias Lidal. All rights reserved.
+*/
+/* Current position */
+"Current position" = "Current position";
+
+/* Saved positions */
+"Saved positions" = "Saved positions";
+
+/* Unable to find weather data */
+"Unable to find weather data" = "Unable to find weather data";
