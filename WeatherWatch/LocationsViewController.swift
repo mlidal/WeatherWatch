@@ -28,13 +28,13 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         
         let sortDescriptor = NSSortDescriptor(key: "county", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
-
+        
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         fetchedResultsController.delegate = self
         return fetchedResultsController
     }()
     
- 
+    
     
     @IBOutlet var tableView: UITableView!
     
@@ -55,11 +55,9 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.allowsMultipleSelectionDuringEditing = false
+        //tableView.allowsMultipleSelectionDuringEditing = false
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 80.0
-        
-        tableView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(closeSearch)))
         
         searchResultsController = navigationController?.storyboard?.instantiateViewControllerWithIdentifier("SearchResultsController") as! SearchResultsController
         searchResultsController.delegate = self
@@ -83,7 +81,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             print("Location services disabled")
         }
     }
-
+    
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
         print(controller)
     }
@@ -105,11 +103,6 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             print("Error saving location to core data \(error)")
         }
         tableView.reloadData()
-    }
-    
-    func closeSearch(event : UIEvent) {
-        searchController.searchBar.endEditing(true)
-        searchController.searchBar.resignFirstResponder()
     }
     
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
@@ -165,15 +158,16 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         let completion : Weather? -> Void = {
             weather in
             if weather != nil {
-            let report = weather!.reports.first!
-            cell.place.text = weather!.location.name + "/" + weather!.location.country
-            cell.temperature.text = String(format: "%.1f °", report.temperature)
-            cell.weatherIcon.image = UIImage(named: report.symbol.variable + ".png")
-            cell.precipitation.text = String(format: "%.1f mm", report.precipitation)
-            cell.windSpeed.text = String(format: "%.1f m/s", report.windSpeed)
-            
-            cell.windDirection.image = self.getWindIcon(report.windSpeed)
-            cell.windDirection.transform = CGAffineTransformMakeRotation(CGFloat((report.windDirection + 90).degreesToRadians))
+                let report = weather!.reports.first!
+                cell.weather = weather
+                cell.place.text = weather!.location.name + "/" + weather!.location.country
+                cell.temperature.text = String(format: "%.1f °", report.temperature)
+                cell.weatherIcon.image = UIImage(named: report.symbol.variable + ".png")
+                cell.precipitation.text = String(format: "%.1f mm", report.precipitation)
+                cell.windSpeed.text = String(format: "%.1f m/s", report.windSpeed)
+                
+                cell.windDirection.image = self.getWindIcon(report.windSpeed)
+                cell.windDirection.transform = CGAffineTransformMakeRotation(CGFloat((report.windDirection + 90).degreesToRadians))
             } else {
                 cell.place.text = "Kunne ikke finne stedet"
             }
@@ -200,6 +194,20 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         }
     }
     
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+            let cell = tableView.cellForRowAtIndexPath(indexPath) as! WeatherCell
+            openYrNoUrl(cell.weather.creditUrl)
+    }
+    
+    private func openYrNoUrl(yrUrl : String) {
+        if let encodedString = yrUrl.stringByAddingPercentEncodingWithAllowedCharacters(
+            NSCharacterSet.URLFragmentAllowedCharacterSet()),
+            url = NSURL(string: encodedString) {
+            UIApplication.sharedApplication().openURL(url)
+        }
+
+    }
+    
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         if type == .Delete {
             let tableIndexPath = NSIndexPath(forItem: indexPath!.row, inSection: 1)
@@ -214,7 +222,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             let geocoder = CLGeocoder()
             geocoder.reverseGeocodeLocation(location, completionHandler: {
                 placemarks, error in
-                if placemarks != nil && placemarks!.count > 0 {                    
+                if placemarks != nil && placemarks!.count > 0 {
                     self.locationService.geocodeSearch(self.location, completion: {
                         location in
                         let entitiyDesc = NSEntityDescription.entityForName("Location", inManagedObjectContext: self.managedObjectContext)

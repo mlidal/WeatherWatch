@@ -19,6 +19,8 @@ class WeatherCell: UITableViewCell {
     @IBOutlet var windSpeed: UILabel!    
     @IBOutlet var windDirection: UIImageView!
     
+    var weather : Weather!    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
