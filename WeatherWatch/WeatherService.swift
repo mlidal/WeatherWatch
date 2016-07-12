@@ -13,7 +13,7 @@ import SWXMLHash
 
 class WeatherService {
     
-    static let weatherService = WeatherService()
+    static let sharedService = WeatherService()
     
     let baseUrl = "https://www.yr.no/stad/"
     var weatherCache = [Location:Weather]()

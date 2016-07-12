@@ -14,7 +14,7 @@ import SwiftyJSON
 
 class LocationService {
     
-    static let locationService = LocationService()
+    static let sharedService = LocationService()
     
     private init() {}
     

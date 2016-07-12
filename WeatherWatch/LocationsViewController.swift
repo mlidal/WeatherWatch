@@ -15,8 +15,8 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     var location : CLLocation!
     var myLocation : Location!
     var locationManager : CLLocationManager!
-    let locationService = LocationService()
-    let weatherService = WeatherService()
+    let locationService = LocationService.sharedService
+    let weatherService = WeatherService.sharedService
     
     var searchController : UISearchController!
     var searchResultsController : SearchResultsController!
@@ -173,7 +173,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             cell.windSpeed.text = String(format: "%.1f m/s", report.windSpeed)
             
             cell.windDirection.image = self.getWindIcon(report.windSpeed)
-            cell.windDirection.transform = CGAffineTransformMakeRotation(CGFloat(report.windDirection.degreesToRadians))
+            cell.windDirection.transform = CGAffineTransformMakeRotation(CGFloat((report.windDirection + 90).degreesToRadians))
             } else {
                 cell.place.text = "Kunne ikke finne stedet"
             }
@@ -214,10 +214,8 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             let geocoder = CLGeocoder()
             geocoder.reverseGeocodeLocation(location, completionHandler: {
                 placemarks, error in
-                if placemarks != nil && placemarks!.count > 0 {
-                    let placemark = placemarks![0]
-                    
-                    self.locationService.geocodeSearch(self.location, placename: placemark, completion: {
+                if placemarks != nil && placemarks!.count > 0 {                    
+                    self.locationService.geocodeSearch(self.location, completion: {
                         location in
                         let entitiyDesc = NSEntityDescription.entityForName("Location", inManagedObjectContext: self.managedObjectContext)
                         
@@ -236,7 +234,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     private func getWindIcon(windSpeed : Double) -> UIImage? {
         var icon : UIImage?
         if windSpeed < 1 {
-            icon = UIImage(named: "Wind Speed less 1.png")
+            icon = UIImage(named: "Wind Speed Less 1.png")
         } else if windSpeed < 3 {
             icon = UIImage(named: "Wind Speed 1-2.png")
         } else if windSpeed < 8 {
