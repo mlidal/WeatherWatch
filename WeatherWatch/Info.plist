@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>geonames username</key>
-	<string>user</string>
+	<string>demo</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
