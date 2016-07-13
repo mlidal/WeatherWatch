@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="AgC-eL-Hgc">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="10032"/>
+    </dependencies>
+    <scenes>
+        <!--Interface Controller-->
+        <scene sceneID="aou-V4-d1y">
+            <objects>
+                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="watch" customModuleProvider="target">
+                    <items>
+                        <button width="1" alignment="left" title="Current position" id="nxl-Cs-Jbo">
+                            <connections>
+                                <segue destination="MEV-qb-CuA" kind="push" id="GxR-Lo-wuM"/>
+                            </connections>
+                        </button>
+                        <button width="1" alignment="left" title="Saved positions" id="b4Q-vo-PF0">
+                            <connections>
+                                <segue destination="7aC-8n-WdN" kind="push" id="iyZ-FC-5WW"/>
+                            </connections>
+                        </button>
+                    </items>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="220" y="345"/>
+        </scene>
+        <!--Static Notification Interface Controller-->
+        <scene sceneID="AEw-b0-oYE">
+            <objects>
+                <notificationController id="YCC-NB-fut">
+                    <items>
+                        <label alignment="left" text="Alert Label" id="IdU-wH-bcW"/>
+                    </items>
+                    <notificationCategory key="notificationCategory" identifier="myCategory" id="JfB-70-Muf"/>
+                    <connections>
+                        <outlet property="notificationAlertLabel" destination="IdU-wH-bcW" id="JKC-fr-R95"/>
+                        <segue destination="4sK-HA-Art" kind="relationship" relationship="dynamicNotificationInterface" id="kXh-Jw-8B1"/>
+                    </connections>
+                </notificationController>
+            </objects>
+            <point key="canvasLocation" x="220" y="643"/>
+        </scene>
+        <!--Weather Controller-->
+        <scene sceneID="LoS-Qm-Cty">
+            <objects>
+                <controller id="MEV-qb-CuA" userLabel="Weather Controller" customClass="WeatherController" customModule="watch_Extension">
+                    <items>
+                        <label width="1" alignment="left" text="Bergen" textAlignment="center" id="u7u-4l-beF" userLabel="Placename"/>
+                        <imageView width="1" height="81" alignment="center" verticalAlignment="center" image="01d" contentMode="scaleAspectFit" id="j2l-xG-vGs" userLabel="WeatherSymbol"/>
+                        <group width="1" alignment="left" verticalAlignment="bottom" id="o01-Pu-XVe">
+                            <items>
+                                <label alignment="left" text="20 °" id="ho8-Il-JzK" userLabel="Temperature"/>
+                                <label height="1" alignment="right" text="0 mm" textAlignment="right" id="cEx-0i-PcR" userLabel="Precipitation"/>
+                            </items>
+                        </group>
+                    </items>
+                    <connections>
+                        <outlet property="placename" destination="u7u-4l-beF" id="bwN-Py-OfG"/>
+                        <outlet property="precipitation" destination="cEx-0i-PcR" id="rZi-lL-5yO"/>
+                        <outlet property="temperature" destination="ho8-Il-JzK" id="yn2-Ae-Ci6"/>
+                        <outlet property="weatherSymbol" destination="j2l-xG-vGs" id="QMG-pl-BLw"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="505" y="143"/>
+        </scene>
+        <!--Locations Controller-->
+        <scene sceneID="GKZ-jp-aXa">
+            <objects>
+                <controller id="7aC-8n-WdN" userLabel="Locations Controller" customClass="LocationsController" customModule="watch_Extension">
+                    <items>
+                        <table alignment="left" id="Y1V-2i-BXA">
+                            <items>
+                                <tableRow identifier="LocationRow" id="f24-1S-eOB" customClass="LocationRow" customModule="watch_Extension">
+                                    <group key="rootItem" width="1" alignment="left" id="2b8-Jc-VK3">
+                                        <items>
+                                            <label width="1" height="1" alignment="left" text="Bergen" textAlignment="center" id="ei1-jI-UbZ" userLabel="Name"/>
+                                        </items>
+                                    </group>
+                                    <connections>
+                                        <outlet property="name" destination="ei1-jI-UbZ" id="vpO-wM-ooZ"/>
+                                        <segue destination="MEV-qb-CuA" kind="push" id="uJU-lX-v9t"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                        </table>
+                    </items>
+                    <connections>
+                        <outlet property="locationsTable" destination="Y1V-2i-BXA" id="Doo-EH-qgj"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="676" y="406"/>
+        </scene>
+        <!--Notification Controller-->
+        <scene sceneID="ZPc-GJ-vnh">
+            <objects>
+                <controller id="4sK-HA-Art" customClass="NotificationController" customModule="watch" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="468" y="643"/>
+        </scene>
+    </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="uJU-lX-v9t"/>
+    </inferredMetricsTieBreakers>
+</document>
