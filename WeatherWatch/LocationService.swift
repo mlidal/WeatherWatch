@@ -19,6 +19,12 @@ class LocationService {
     private init() {}
     
     var currentLocation : Location?
+    lazy var geonamesUsername : String = {
+        let bundle = NSBundle.mainBundle()
+        let geonamesUsername = bundle.infoDictionary!["geonames username"] as! String
+        return geonamesUsername
+    }()
+    
     
     let SSRIUrl = "https://ws.geonorge.no/SKWS3Index/ssr/sok?"
     let geonamesSearchUrl = "http://api.geonames.org/searchJSON?"
@@ -49,7 +55,7 @@ class LocationService {
         
         if !onlyNorway {
             dispatch_group_enter(self.group)
-            path = "name_startsWith=\(text)&maxRows=10&username=mathiaslidal"
+            path = "name_startsWith=\(text)&maxRows=10&username=\(geonamesUsername)"
             Alamofire.request(.GET, geonamesSearchUrl + path.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!).validate().responseJSON(queue: queue) {
                 response in
                 switch response.result {
@@ -89,7 +95,7 @@ class LocationService {
             placemarks, errors in
             let placename = placemarks![0]
             
-            let url = self.geocodeUrl + "lat=\(location.coordinate.latitude)&lng=\(location.coordinate.longitude)&username=mathiaslidal"
+            let url = self.geocodeUrl + "lat=\(location.coordinate.latitude)&lng=\(location.coordinate.longitude)&username=\(self.geonamesUsername)"
             Alamofire.request(.GET, url).validate().responseJSON() {
                 response in
                 switch response.result {

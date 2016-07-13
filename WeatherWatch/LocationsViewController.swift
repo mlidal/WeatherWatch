@@ -12,6 +12,8 @@ import CoreData
 
 class LocationsViewController: UIViewController, UISearchControllerDelegate, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, NSFetchedResultsControllerDelegate, SearchResultDelegate {
     
+    var geonamesUsername : String!
+    
     var location : CLLocation!
     var myLocation : Location!
     var locationManager : CLLocationManager!
@@ -43,6 +45,8 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         managedObjectContext = appDelegate.managedObjectContext
         
