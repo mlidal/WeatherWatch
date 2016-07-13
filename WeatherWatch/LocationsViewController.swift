@@ -16,6 +16,8 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     
     var location : CLLocation!
     var myLocation : Location!
+    var myLocationWeather : Weather!
+    
     var locationManager : CLLocationManager!
     let locationService = LocationService.sharedService
     let weatherService = WeatherService.sharedService
@@ -160,7 +162,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         cell.precipitation.text = ""
         cell.windSpeed.text = ""
         cell.windDirection.image = nil
-        let completion : Weather? -> Void = {
+        let configureCell : Weather? -> Void = {
             weather in
             if weather != nil {
                 let report = weather!.reports.first!
@@ -178,10 +180,10 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             }
         }
         if indexPath.section == 0 {
-            weatherService.getWeather(myLocation, completion: completion)
+            configureCell(myLocationWeather)
         } else {
             let entity = fetchedResultsController.objectAtIndexPath(NSIndexPath(forItem: indexPath.row, inSection: 0)) as! Location
-            weatherService.getWeather(entity, completion: completion)
+            weatherService.getWeather(entity, completion: configureCell)
         }
         return cell
     }
@@ -234,7 +236,11 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
                         
                         self.myLocation = NSManagedObject.init(entity: entitiyDesc!, insertIntoManagedObjectContext: nil) as! Location
                         self.myLocation.setLocationFromSearch(location)
-                        self.tableView.reloadData()
+                        self.weatherService.getWeather(self.myLocation, completion: {
+                            weather in
+                            self.myLocationWeather = weather
+                            self.tableView.reloadData()
+                        })
                     })
                     
                     
