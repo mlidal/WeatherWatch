@@ -11,6 +11,7 @@ import Alamofire
 import SWXMLHash
 import CoreLocation
 import SwiftyJSON
+import CoreData
 
 class LocationService {
     
@@ -134,6 +135,15 @@ class LocationService {
     private func trimCountyName(name : String) -> String {
         let regex =  try! NSRegularExpression(pattern: " \\(\\w*\\)", options: .CaseInsensitive)
         return regex.stringByReplacingMatchesInString(name, options: [], range: NSMakeRange(0, name.characters.count), withTemplate: "")
+    }
+    
+    func getSavedLocations() -> [Location] {
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let moc = appDelegate.managedObjectContext
+        let fetchRequest = NSFetchRequest(entityName: "Location")
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        return try! moc.executeFetchRequest(fetchRequest) as! [Location]
     }
 }
 
