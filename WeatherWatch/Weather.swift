@@ -33,6 +33,17 @@ class Weather : NSObject {
         return abs(timestamp.timeIntervalSinceNow) > 600
     }    
     
+    func getWatchWeather() -> [String:String] {
+        let report = reports[0]
+        
+        var weather = [String:String]()
+        weather["placename"] = location.name
+        weather["symbol"] = report.symbol.variable
+        weather["temperature"] = String(format: "%.1f °", report.temperature)
+        weather["precipitation"] = String(format: "%.1f mm", report.precipitation)
+        return weather
+    }
+    
     class WeatherReport {
         let startTime : NSDate
         let endTime : NSDate
