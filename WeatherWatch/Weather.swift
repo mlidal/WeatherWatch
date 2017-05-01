@@ -11,7 +11,7 @@ import CoreLocation
 
 class Weather : NSObject {
 
-    let timestamp : NSDate
+    let timestamp : Date
     
     let location : Location
     
@@ -21,7 +21,7 @@ class Weather : NSObject {
     var reports = [WeatherReport]()
     
     init(location : Weather.Location, creditText: String, creditUrl: String, reports : [WeatherReport]) {
-        self.timestamp = NSDate()
+        self.timestamp = Date()
         self.location = location
         self.creditUrl = creditUrl
         self.creditText = creditText
@@ -45,8 +45,8 @@ class Weather : NSObject {
     }
     
     class WeatherReport {
-        let startTime : NSDate
-        let endTime : NSDate
+        let startTime : Date
+        let endTime : Date
         
         let symbol : WeatherSymbol
         let precipitation : Double
@@ -54,7 +54,7 @@ class Weather : NSObject {
         let windSpeed : Double
         let temperature : Double
 
-        init(startTime : NSDate, endTime: NSDate, symbol : WeatherSymbol, precipitation : Double, windSpeed : Double, windDirection : Double, temperature: Double) {
+        init(startTime : Date, endTime: Date, symbol : WeatherSymbol, precipitation : Double, windSpeed : Double, windDirection : Double, temperature: Double) {
             self.startTime = startTime
             self.endTime = endTime
             self.symbol = symbol

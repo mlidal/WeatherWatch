@@ -20,13 +20,13 @@ class WeatherService {
     
     private init() {}
     
-    func getWeather(location : Location, completion : Weather? -> Void) {
+    func getWeather(location : Location, completion : @escaping (Weather?) -> Void) {
         
         let savedWeather = weatherCache[location]
         if (savedWeather != nil && !savedWeather!.hasExpired()) {
             completion(savedWeather)
         } else {
-            weatherCache.removeValueForKey(location)
+            weatherCache.removeValue(forKey: location)
             
             var path = location.country! + "/"
             path += location.county! + "/"
@@ -41,14 +41,15 @@ class WeatherService {
             
             path += "varsel.xml"
             
-            Alamofire.request(.GET, baseUrl + path.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!).validate().response() {
-                request, response, data, error in
+            let url = baseUrl + path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            Alamofire.request(url).response() {
+                response in
                 
-                let xml = SWXMLHash.parse(data!)
+                let xml = SWXMLHash.parse(response.data!)
                 
                 if xml["weatherdata"].element != nil {
                     
-                    let weather = self.createWeather(xml["weatherdata"])
+                    let weather = self.createWeather(input: xml["weatherdata"])
                     self.weatherCache[location] = weather
                     completion(weather)
                 } else {
@@ -59,27 +60,27 @@ class WeatherService {
     }
     
     private func createWeather(input : XMLIndexer) -> Weather {
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         
         let locationXML = input["location"]
-        let location = Weather.Location(name: locationXML["name"].element!.text!, type: locationXML["type"].element!.text!, country: locationXML["country"].element!.text!, lat: Double(locationXML["location"].element!.attributes["latitude"]!)!, lon: Double(locationXML["location"].element!.attributes["longitude"]!)!)
+        let location = Weather.Location(name: locationXML["name"].element!.text!, type: locationXML["type"].element!.text!, country: locationXML["country"].element!.text!, lat: Double(locationXML["location"].element!.allAttributes["latitude"]!.text)!, lon: Double(locationXML["location"].element!.allAttributes["longitude"]!.text)!)
         let creditXML = input["credit"]["link"].element!
-        let creditText = creditXML.attributes["text"]!
-        let creditUrl = creditXML.attributes["url"]!
+        let creditText = creditXML.allAttributes["text"]!.text
+        let creditUrl = creditXML.allAttributes["url"]!.text
 
         var reports = Array<Weather.WeatherReport>()
         
         let forecastXML = input["forecast"]["tabular"]
         for forecast in forecastXML["time"].all {
-            let startTime = dateFormatter.dateFromString(forecast.element!.attributes["from"]!)!
-            let endTime  = dateFormatter.dateFromString(forecast.element!.attributes["to"]!)!
+            let startTime = dateFormatter.date(from: forecast.element!.allAttributes["from"]!.text)!
+            let endTime  = dateFormatter.date(from: forecast.element!.allAttributes["to"]!.text)!
             let symbolXML = forecast["symbol"].element!
-            let symbolNumber = Int(symbolXML.attributes["number"]!)
-            let symbolNumberEx = Int(symbolXML.attributes["numberEx"]!)
-            let symbol = Weather.WeatherSymbol(number: symbolNumber!, numberEx: symbolNumberEx!, name: symbolXML.attributes["name"]!, variable: symbolXML.attributes["var"]!)
+            let symbolNumber = Int(symbolXML.allAttributes["number"]!.text)!
+            let symbolNumberEx = Int(symbolXML.allAttributes["numberEx"]!.text)!
+            let symbol = Weather.WeatherSymbol(number: symbolNumber, numberEx: symbolNumberEx, name: symbolXML.allAttributes["name"]!.text, variable: symbolXML.allAttributes["var"]!.text)
             
-            let report = Weather.WeatherReport(startTime: startTime, endTime: endTime, symbol: symbol, precipitation: Double(forecast["precipitation"].element!.attributes["value"]!)!, windSpeed: Double(forecast["windSpeed"].element!.attributes["mps"]!)!, windDirection: Double(forecast["windDirection"].element!.attributes["deg"]!)!, temperature: Double(forecast["temperature"].element!.attributes["value"]!)!)
+            let report = Weather.WeatherReport(startTime: startTime, endTime: endTime, symbol: symbol, precipitation: Double(forecast["precipitation"].element!.allAttributes["value"]!.text)!, windSpeed: Double(forecast["windSpeed"].element!.allAttributes["mps"]!.text)!, windDirection: Double(forecast["windDirection"].element!.allAttributes["deg"]!.text)!, temperature: Double(forecast["temperature"].element!.allAttributes["value"]!.text)!)
             reports.append(report)
         }
         

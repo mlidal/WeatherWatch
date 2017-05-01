@@ -14,16 +14,17 @@ class SearchResultsController: UITableViewController {
     var selectedResult : SearchLocation?
     var delegate : SearchResultDelegate?
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return searchResults.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("SearchResultCell")
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultCell")
         let result = searchResults[indexPath.row]
         
         cell?.textLabel?.text = result.name
@@ -36,8 +37,8 @@ class SearchResultsController: UITableViewController {
         tableView.reloadData()
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        delegate?.searchResultSelected(searchResults[indexPath.row])
-        dismissViewControllerAnimated(true, completion: nil)
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        delegate?.searchResultSelected(result: searchResults[indexPath.row])
+        dismiss(animated: true, completion: nil)
     }
 }

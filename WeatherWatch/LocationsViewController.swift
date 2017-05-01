@@ -25,10 +25,10 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     var searchController : UISearchController!
     var searchResultsController : SearchResultsController!
     var managedObjectContext: NSManagedObjectContext!
-    var tempObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+    var tempObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
     
-    lazy var fetchedResultsController: NSFetchedResultsController = {
-        let fetchRequest = NSFetchRequest(entityName: "Location")
+    lazy var fetchedResultsController: NSFetchedResultsController<Location> = {
+        let fetchRequest = NSFetchRequest<Location>(entityName: "Location")
         
         let sortDescriptor = NSSortDescriptor(key: "county", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
@@ -49,7 +49,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         super.viewDidLoad()
         
         
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         managedObjectContext = appDelegate.managedObjectContext
         
         do {
@@ -64,9 +64,9 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         //tableView.allowsMultipleSelectionDuringEditing = false
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 80.0
-        tableView.tableFooterView = UIView(frame: CGRectZero)
+        tableView.tableFooterView = UIView(frame: CGRect.zero)
         
-        searchResultsController = navigationController?.storyboard?.instantiateViewControllerWithIdentifier("SearchResultsController") as! SearchResultsController
+        searchResultsController = navigationController?.storyboard?.instantiateViewController(withIdentifier: "SearchResultsController") as! SearchResultsController
         searchResultsController.delegate = self
         searchController = UISearchController(searchResultsController: searchResultsController)
         searchController.delegate = self
@@ -75,10 +75,10 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         searchController.definesPresentationContext = true
         
         if CLLocationManager.locationServicesEnabled() {
-            if CLLocationManager.authorizationStatus() != .Denied && CLLocationManager.authorizationStatus() != .Restricted {
+            if CLLocationManager.authorizationStatus() != .denied && CLLocationManager.authorizationStatus() != .restricted {
                 locationManager = CLLocationManager()
                 locationManager.delegate = self
-                if CLLocationManager.authorizationStatus() == .NotDetermined {
+                if CLLocationManager.authorizationStatus() == .notDetermined {
                     locationManager.requestWhenInUseAuthorization()
                 } else {
                     locationManager.startUpdatingLocation()
@@ -89,21 +89,21 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         }
     }
     
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         print(controller)
     }
     
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
-        locationService.locationSearch(searchController.searchBar.text!, onlyNorway: false, completion: {
+    func updateSearchResults(for searchController: UISearchController) {
+        locationService.locationSearch(text: searchController.searchBar.text!, onlyNorway: false, completion: {
             results in
-            self.searchResultsController.updateSearchResults(results)
+            self.searchResultsController.updateSearchResults(results: results)
         })
     }
     
     func searchResultSelected(result: SearchLocation) {
-        searchController.active = false
-        let location = NSEntityDescription.insertNewObjectForEntityForName("Location", inManagedObjectContext: managedObjectContext) as! Location
-        location.setLocationFromSearch(result)
+        searchController.isActive = false
+        let location = NSEntityDescription.insertNewObject(forEntityName: "Location", into: managedObjectContext) as! Location
+        location.setLocationFromSearch(search: result)
         do {
             try managedObjectContext.save()
         } catch let error as NSError {
@@ -112,8 +112,8 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         tableView.reloadData()
     }
     
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        if status == .AuthorizedAlways || status == .AuthorizedWhenInUse {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedAlways || status == .authorizedWhenInUse {
             locationManager.startUpdatingLocation()
         }
     }
@@ -125,11 +125,12 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
     
     // MARK: - Table view data source
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return myLocation == nil ? 0 : 1
         } else {
@@ -142,7 +143,7 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         }
     }
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
             return NSLocalizedString("Current position", comment: "Current position")
         } else {
@@ -150,19 +151,19 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         }
     }
     
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return indexPath.section == 1
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("WeatherCell", forIndexPath: indexPath) as! WeatherCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "WeatherCell", for: indexPath) as! WeatherCell
         cell.place.text = "  "
         cell.temperature.text = ""
         cell.weatherIcon.image = nil
         cell.precipitation.text = ""
         cell.windSpeed.text = ""
         cell.windDirection.image = nil
-        let configureCell : Weather? -> Void = {
+        let configureCell : (Weather?) -> Void = {
             weather in
             if weather != nil {
                 let report = weather!.reports.first!
@@ -173,8 +174,8 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
                 cell.precipitation.text = String(format: "%.1f mm", report.precipitation)
                 cell.windSpeed.text = String(format: "%.1f m/s", report.windSpeed)
                 
-                cell.windDirection.image = self.getWindIcon(report.windSpeed)
-                cell.windDirection.transform = CGAffineTransformMakeRotation(CGFloat((report.windDirection + 90).degreesToRadians))
+                cell.windDirection.image = self.getWindIcon(windSpeed: report.windSpeed)
+                cell.windDirection.transform = CGAffineTransform(rotationAngle: CGFloat((report.windDirection + 90).degreesToRadians))
             } else {
                 cell.place.text = NSLocalizedString("Unable to find weather data", comment: "Unable to find weather data")
             }
@@ -182,17 +183,17 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         if indexPath.section == 0 {
             configureCell(myLocationWeather)
         } else {
-            let entity = fetchedResultsController.objectAtIndexPath(NSIndexPath(forItem: indexPath.row, inSection: 0)) as! Location
-            weatherService.getWeather(entity, completion: configureCell)
+            let entity = fetchedResultsController.object(at: IndexPath(item: indexPath.row, section: 0)) 
+            weatherService.getWeather(location: entity, completion: configureCell)
         }
         return cell
     }
     
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            let path = NSIndexPath(forItem: indexPath.row, inSection: 0)
-            let location = fetchedResultsController.objectAtIndexPath(path) as! Location
-            managedObjectContext.deleteObject(location)
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let path = IndexPath(item: indexPath.row, section: 0)
+            let location = fetchedResultsController.object(at: path) 
+            managedObjectContext.delete(location)
             do {
                 try managedObjectContext.save()
             } catch {
@@ -201,28 +202,29 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
         }
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-            let cell = tableView.cellForRowAtIndexPath(indexPath) as! WeatherCell
-            openYrNoUrl(cell.weather.creditUrl)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            let cell = tableView.cellForRow(at: indexPath) as! WeatherCell
+            openYrNoUrl(yrUrl: cell.weather.creditUrl)
     }
     
     private func openYrNoUrl(yrUrl : String) {
-        if let encodedString = yrUrl.stringByAddingPercentEncodingWithAllowedCharacters(
-            NSCharacterSet.URLFragmentAllowedCharacterSet()),
-            url = NSURL(string: encodedString) {
-            UIApplication.sharedApplication().openURL(url)
+        if let encodedString = yrUrl.addingPercentEncoding(
+            withAllowedCharacters: .urlFragmentAllowed),
+            let url = URL(string: encodedString) {
+            UIApplication.shared.openURL(url)
         }
 
     }
-    
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        if type == .Delete {
-            let tableIndexPath = NSIndexPath(forItem: indexPath!.row, inSection: 1)
-            tableView.deleteRowsAtIndexPaths([tableIndexPath], withRowAnimation: .Right)
+
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        if type == .delete {
+            let tableIndexPath = IndexPath(item: indexPath!.row, section: 1)
+            tableView.deleteRows(at: [tableIndexPath], with: .right)
         }
     }
     
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if location == nil && locations.count > 0 {
             location = locations[0]
             
@@ -230,13 +232,13 @@ class LocationsViewController: UIViewController, UISearchControllerDelegate, UIS
             geocoder.reverseGeocodeLocation(location, completionHandler: {
                 placemarks, error in
                 if placemarks != nil && placemarks!.count > 0 {
-                    self.locationService.geocodeSearch(self.location, completion: {
+                    self.locationService.geocodeSearch(location: self.location, completion: {
                         location in
-                        let entitiyDesc = NSEntityDescription.entityForName("Location", inManagedObjectContext: self.managedObjectContext)
+                        let entitiyDesc = NSEntityDescription.entity(forEntityName: "Location", in: self.managedObjectContext)
                         
-                        self.myLocation = NSManagedObject.init(entity: entitiyDesc!, insertIntoManagedObjectContext: nil) as! Location
-                        self.myLocation.setLocationFromSearch(location)
-                        self.weatherService.getWeather(self.myLocation, completion: {
+                        self.myLocation = NSManagedObject.init(entity: entitiyDesc!, insertInto: nil) as! Location
+                        self.myLocation.setLocationFromSearch(search: location)
+                        self.weatherService.getWeather(location: self.myLocation, completion: {
                             weather in
                             self.myLocationWeather = weather
                             self.tableView.reloadData()
@@ -298,5 +300,5 @@ protocol SearchResultDelegate {
 }
 
 extension Double {
-    var degreesToRadians: Double { return self * M_PI / 180 }
+    var degreesToRadians: Double { return self * .pi / 180 }
 }

@@ -1,7 +1,7 @@
 PODS:
-  - Alamofire (3.4.1)
-  - SwiftyJSON (2.3.2)
-  - SWXMLHash (2.3.1)
+  - Alamofire (4.4.0)
+  - SwiftyJSON (3.1.4)
+  - SWXMLHash (3.0.4)
 
 DEPENDENCIES:
   - Alamofire
@@ -9,10 +9,10 @@ DEPENDENCIES:
   - SWXMLHash
 
 SPEC CHECKSUMS:
-  Alamofire: 01a82e2f6c0f860ade35534c8dd88be61bdef40c
-  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
-  SWXMLHash: 795c66e74f4cc9473ad6465c6653c5a6f59f417e
+  Alamofire: dc44b1600b800eb63da6a19039a0083d62a6a62d
+  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
+  SWXMLHash: 29d20b84692fc319ea8ed933058fe7d8d005139b
 
 PODFILE CHECKSUM: 05573ed57f32bd10310b08325fc8f8faff8671a6
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.2.1
